@@ -1,0 +1,305 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   NOIR design tokens (from the approved brief)
+------------------------------------------------------------------- */
+:root {
+  --charcoal: #151515;
+  --charcoal-2: #1e1c1a; /* raised surface on dark */
+  --charcoal-3: #282522; /* inset surface on dark */
+  --cream: #f5ebdd;
+  --cream-2: #ebddc7;
+  --ember: #e85d35; /* burnt orange: buttons and large accents */
+  --ember-deep: #b8431f; /* burnt orange for text on cream (passes contrast) */
+  --gold: #d7a94b;
+  --olive: #667a48;
+  --olive-deep: #4e5f36; /* olive with cream text on top (passes contrast) */
+  --ink-muted: #a79f92; /* secondary text on dark */
+  --paper-muted: #6b6254; /* secondary text on cream */
+}
+
+@theme inline {
+  --color-charcoal: var(--charcoal);
+  --color-charcoal-2: var(--charcoal-2);
+  --color-charcoal-3: var(--charcoal-3);
+  --color-cream: var(--cream);
+  --color-cream-2: var(--cream-2);
+  --color-ember: var(--ember);
+  --color-ember-deep: var(--ember-deep);
+  --color-gold: var(--gold);
+  --color-olive: var(--olive);
+  --color-olive-deep: var(--olive-deep);
+
+  --font-display: var(--nf-display), Georgia, "Times New Roman", serif;
+  --font-sans: var(--nf-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--charcoal);
+  color: var(--cream);
+}
+
+::selection {
+  background: var(--ember);
+  color: var(--charcoal);
+}
+
+/* ------------------------------------------------------------------
+   Two section "tones". Components stay tone-agnostic: they use the
+   classes below and the section they sit in decides the colours.
+------------------------------------------------------------------- */
+@layer components {
+  .tone-dark {
+    background: var(--charcoal);
+    color: var(--cream);
+  }
+  .tone-light {
+    background: var(--cream);
+    color: var(--charcoal);
+    color-scheme: light;
+  }
+
+  .muted {
+    color: var(--ink-muted);
+  }
+  .tone-light .muted {
+    color: var(--paper-muted);
+  }
+
+  .eyebrow {
+    color: var(--gold);
+  }
+  .tone-light .eyebrow {
+    color: var(--ember-deep);
+  }
+
+  .accent-text {
+    color: var(--ember);
+  }
+  .tone-light .accent-text {
+    color: var(--ember-deep);
+  }
+
+  .hairline {
+    border-color: rgba(245, 235, 221, 0.13);
+  }
+  .tone-light .hairline {
+    border-color: rgba(21, 21, 21, 0.14);
+  }
+
+  .card {
+    background: var(--charcoal-2);
+    border: 1px solid rgba(245, 235, 221, 0.1);
+    border-radius: 1rem;
+  }
+  .tone-light .card {
+    background: rgba(255, 255, 255, 0.55);
+    border-color: rgba(21, 21, 21, 0.1);
+  }
+
+  .field {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(245, 235, 221, 0.18);
+    background: var(--charcoal-3);
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    color: var(--cream);
+    transition: border-color 0.2s ease;
+  }
+  .field::placeholder {
+    color: var(--ink-muted);
+    opacity: 0.8;
+  }
+  .field:hover {
+    border-color: rgba(245, 235, 221, 0.32);
+  }
+  .field:focus {
+    border-color: var(--gold);
+    outline: none;
+  }
+  .field[aria-invalid="true"] {
+    border-color: #f08a7a;
+  }
+}
+
+/* Visible keyboard focus everywhere */
+:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 3px;
+}
+.tone-light :focus-visible {
+  outline-color: var(--ember-deep);
+}
+
+/* ------------------------------------------------------------------
+   Restrained motion: a gentle reveal on scroll, nothing more.
+------------------------------------------------------------------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hero-in {
+  opacity: 0;
+  animation: hero-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pop-in {
+  animation: pop 0.25s ease-out;
+}
+
+/* Native <dialog> used by the gallery lightbox */
+dialog.lightbox {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(10, 10, 10, 0.94);
+  color: var(--cream);
+}
+dialog.lightbox::backdrop {
+  background: rgba(10, 10, 10, 0.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal,
+  .hero-in,
+  .pop-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+}
+
+/* Buttons (kept in CSS so the two tones can restyle the outline button) */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    letter-spacing: 0.01em;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn-md {
+    padding: 0.75rem 1.5rem;
+  }
+  .btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+  }
+  .btn-primary {
+    background: var(--ember);
+    color: var(--charcoal);
+  }
+  .btn-primary:hover {
+    background: var(--gold);
+  }
+  .btn-outline {
+    border: 1px solid rgba(245, 235, 221, 0.4);
+    color: var(--cream);
+  }
+  .btn-outline:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .tone-light .btn-outline {
+    border-color: rgba(21, 21, 21, 0.4);
+    color: var(--charcoal);
+  }
+  .tone-light .btn-outline:hover {
+    border-color: var(--ember-deep);
+    color: var(--ember-deep);
+  }
+  .btn[disabled],
+  .btn[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .pill {
+    border: 1px solid rgba(245, 235, 221, 0.22);
+    color: var(--cream);
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .pill:hover {
+    border-color: var(--gold);
+  }
+  .pill[aria-pressed="true"] {
+    background: var(--cream);
+    color: var(--charcoal);
+    border-color: var(--cream);
+  }
+  .tone-light .pill {
+    border-color: rgba(21, 21, 21, 0.25);
+    color: var(--charcoal);
+  }
+  .tone-light .pill:hover {
+    border-color: var(--ember-deep);
+  }
+  .tone-light .pill[aria-pressed="true"] {
+    background: var(--charcoal);
+    color: var(--cream);
+    border-color: var(--charcoal);
+  }
+}
